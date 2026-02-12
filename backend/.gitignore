@@ -1,0 +1,7 @@
+node_modules/
+.env
+coverage/
+*.log
+*.txt
+debug_test.js
+manual_test.js

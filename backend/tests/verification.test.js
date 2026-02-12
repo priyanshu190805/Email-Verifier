@@ -1,13 +1,12 @@
 
 import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert';
-import dns from 'dns'; // Use default import as in service
+import dns from 'dns';
 import net from 'net';
 import { EventEmitter } from 'events';
 import { verifyEmail } from "../src/services/emailVerificationService.js";
 import { getDidYouMean } from "../src/services/typoDetectionService.js";
 
-// Helper to mock SMTP socket
 function mockSmtpSocket(responses = []) {
     const socket = new EventEmitter();
     socket.write = mock.fn((data) => {
@@ -26,23 +25,17 @@ function mockSmtpSocket(responses = []) {
 
 describe("Email Verification & Typo Detection (Node Test Runner)", () => {
 
-    // Setup mocks before tests
-    // Note: mock.method modifies the object in place
     let resolveMxMock;
     let createConnectionMock;
 
     beforeEach(() => {
-        // Reset mocks if needed or re-create
         if (resolveMxMock) resolveMxMock.mock.restore();
         if (createConnectionMock) createConnectionMock.mock.restore();
 
-        // Mock dns.resolveMx
         resolveMxMock = mock.method(dns, 'resolveMx', (domain, callback) => {
-            // Default behavior: empty or error unless overridden in test
             callback(null, []);
         });
 
-        // Mock net.createConnection
         createConnectionMock = mock.method(net, 'createConnection', () => {
             return new EventEmitter();
         });
@@ -53,7 +46,6 @@ describe("Email Verification & Typo Detection (Node Test Runner)", () => {
         createConnectionMock.mock.restore();
     });
 
-    // --- Part 1: Syntax Validation Tests ---
     describe("Syntax Validation", () => {
         it("1. Should reject missing @ symbol", async () => {
             const res = await verifyEmail("missingat.com");
@@ -83,7 +75,6 @@ describe("Email Verification & Typo Detection (Node Test Runner)", () => {
         });
     });
 
-    // --- Part 2: Typo Detection Tests ---
     describe("Typo Detection", () => {
         it("6. Should detect 'gmial.com' typo", async () => {
             const res = await verifyEmail("user@gmial.com");
@@ -104,11 +95,9 @@ describe("Email Verification & Typo Detection (Node Test Runner)", () => {
         });
 
         it("9. Should NOT flag valid 'gmail.com'", async () => {
-            // Mock DNS to return success so it doesn't fail at DNS step
             resolveMxMock.mock.mockImplementation((domain, cb) => {
                 cb(null, [{ exchange: "mx.google.com", priority: 10 }]);
             });
-            // Mock NET to return immediate close or something simple so it doesn't hang
             createConnectionMock.mock.mockImplementation(() => {
                 const s = new EventEmitter();
                 s.write = () => { };
@@ -126,7 +115,6 @@ describe("Email Verification & Typo Detection (Node Test Runner)", () => {
         });
     });
 
-    // --- Part 3: DNS & SMTP Logic Tests ---
     describe("SMTP & DNS Logic", () => {
 
         it("10. Should fail if DNS lookup finds no MX records", async () => {
@@ -183,7 +171,6 @@ describe("Email Verification & Typo Detection (Node Test Runner)", () => {
 
             const emailPromise = verifyEmail("user@timeout.com");
 
-            // Wait for socket to be created and setTimeout called
             await new Promise(r => setTimeout(r, 50));
 
             if (socket && socket.timeoutCallback) {
@@ -191,6 +178,7 @@ describe("Email Verification & Typo Detection (Node Test Runner)", () => {
             }
 
             const res = await emailPromise;
+            assert.strictEqual(res.result, "unknown");
             assert.strictEqual(res.subresult, "connection_error");
             assert.strictEqual(res.error, "Connection timed out");
         });
@@ -200,6 +188,17 @@ describe("Email Verification & Typo Detection (Node Test Runner)", () => {
             const res = await verifyEmail("user@dnsfail.com");
             assert.strictEqual(res.result, "invalid");
             assert.strictEqual(res.subresult, "dns_error");
+        });
+
+        it("16. Should handle null or undefined input", async () => {
+            const resNull = await verifyEmail(null);
+            assert.strictEqual(resNull.result, "invalid");
+            assert.strictEqual(resNull.subresult, "syntax_error");
+            assert.strictEqual(resNull.error, "Email is required and must be a string");
+
+            const resUndefined = await verifyEmail(undefined);
+            assert.strictEqual(resUndefined.result, "invalid");
+            assert.strictEqual(resUndefined.subresult, "syntax_error");
         });
     });
 });

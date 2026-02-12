@@ -1,5 +1,5 @@
 
-import { useState } from 'react'
+
 import EmailVerification from './components/EmailVerification'
 
 function App() {
