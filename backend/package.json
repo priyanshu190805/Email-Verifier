@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/verification.test.js",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dns": "^0.2.2",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "mongoose": "^9.2.1",
+    "nodemailer": "^8.0.1",
+    "smtp-connection": "^4.0.2"
+  },
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "jest": "^29.7.0",
+    "mocha": "^11.7.5",
+    "supertest": "^7.0.0"
+  }
+}

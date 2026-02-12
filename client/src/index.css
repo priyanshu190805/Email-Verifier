@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --primary-color: #646cff;
+    --primary-hover: #535bf2;
+    --bg-color: #1a1a1a;
+    --card-bg: #2a2a2a;
+    --text-color: #ffffff;
+    --error-color: #ff4d4f;
+    --success-color: #52c41a;
+    --warning-color: #faad14;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    width: 100%;
+}
+
+h1 {
+    font-size: 3.2em;
+    line-height: 1.1;
+}
+
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: var(--card-bg);
+    cursor: pointer;
+    transition: border-color 0.25s;
+}
+
+button:hover {
+    border-color: var(--primary-color);
+}
+
+button:focus,
+button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color: #213547;
+        background-color: #ffffff;
+        --bg-color: #f0f2f5;
+        --card-bg: #ffffff;
+        --text-color: #213547;
+    }
+
+    button {
+        background-color: #f9f9f9;
+    }
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 2em;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.result-card {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge-valid {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.badge-invalid {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.badge-unknown {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+.label {
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.value {
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.typo-alert {
+    background-color: #fffbe6;
+    border: 1px solid #ffe58f;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: #d48806;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.typo-suggestion {
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 600px) {
+    #root {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    .card {
+        padding: 1.5em;
+        width: 100%;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .detail-row {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .value {
+        text-align: left;
+    }
+}
