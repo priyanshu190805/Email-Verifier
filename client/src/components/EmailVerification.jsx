@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaMagic } from 'react-icons/fa';
 import ResultCard from './ResultCard';
 
 const EmailVerification = () => {
