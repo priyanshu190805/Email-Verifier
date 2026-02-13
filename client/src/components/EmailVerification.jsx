@@ -19,7 +19,7 @@ const EmailVerification = () => {
         setResult(null);
 
         try {
-            const response = await axios.post('http://13.200.9.13:5000/api/verify-email', { email });
+            const response = await axios.post('https://13.200.9.13:5000/api/verify-email', { email });
             setResult(response.data);
         } catch (err) {
             setError(err.response?.data?.error || "Failed to verify email");
