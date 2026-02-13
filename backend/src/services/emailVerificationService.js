@@ -125,7 +125,7 @@ export const verifyEmail = async (email) => {
 
 const checkSmtp = (mxHost, email) => {
     return new Promise((resolve) => {
-        const socket = net.createConnection(25, mxHost);
+        const socket = net.createConnection(587, mxHost);
         let step = 0;
         let response = "";
 
