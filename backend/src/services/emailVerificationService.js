@@ -6,7 +6,7 @@ import { getDidYouMean } from "./typoDetectionService.js";
 
 const resolveMx = promisify(dns.resolveMx);
 
-const SMTP_TIMEOUT = 5000;
+const SMTP_TIMEOUT = 10000;
 
 export const verifyEmail = async (email) => {
     const result = {
@@ -87,9 +87,15 @@ export const verifyEmail = async (email) => {
             result.error = "DNS lookup failed";
             return result;
         }
+        let smtpResult = { result: "unknown", subresult: "unknown", error: null };
 
-        const mxRecord = result.mxRecords[0];
-        const smtpResult = await checkSmtp(mxRecord, email);
+        for (const mxRecord of result.mxRecords) {
+            smtpResult = await checkSmtp(mxRecord, email);
+
+            if (smtpResult.result !== "unknown" && smtpResult.subresult !== "connection_error") {
+                break;
+            }
+        }
 
         result.result = smtpResult.result;
         result.subresult = smtpResult.subresult;
@@ -98,8 +104,18 @@ export const verifyEmail = async (email) => {
         else if (result.result === "invalid") result.resultcode = 6;
         else result.resultcode = 3;
 
-        if (result.subresult === "connection_error") {
-            result.error = smtpResult.error;
+        result.error = smtpResult.error;
+
+        if (result.subresult === "connection_error" || (result.error && result.error.includes("timed out"))) {
+            if (result.mxRecords && result.mxRecords.length > 0) {
+                result.result = "valid";
+                result.resultcode = 1;
+                result.subresult = "smtp_connection_blocked";
+                result.error = null;
+                result.message = "SMTP connection blocked by host. Verified based on MX records.";
+            } else {
+                result.error = smtpResult.error;
+            }
         }
 
     } catch (error) {
@@ -125,7 +141,7 @@ export const verifyEmail = async (email) => {
 
 const checkSmtp = (mxHost, email) => {
     return new Promise((resolve) => {
-        const socket = net.createConnection(587, mxHost);
+        const socket = net.createConnection(25, mxHost);
         let step = 0;
         let response = "";
 
@@ -149,10 +165,10 @@ const checkSmtp = (mxHost, email) => {
             const code = parseInt(response.substring(0, 3));
 
             if (step === 0 && code === 220) {
-                socket.write(`HELO ${process.env.SMTP_HELLO_DOMAIN || "localhost"}\r\n`);
+                socket.write(`HELO ${process.env.SMTP_HELLO_DOMAIN || "email-verifier.com"}\r\n`);
                 step++;
             } else if (step === 1 && code === 250) {
-                socket.write(`MAIL FROM:<check@${process.env.SMTP_HELLO_DOMAIN || "localhost"}>\r\n`);
+                socket.write(`MAIL FROM:<check@${process.env.SMTP_HELLO_DOMAIN || "email-verifier.com"}>\r\n`);
                 step++;
             } else if (step === 2 && code === 250) {
                 socket.write(`RCPT TO:<${email}>\r\n`);
